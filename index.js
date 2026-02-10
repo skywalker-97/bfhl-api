@@ -78,37 +78,33 @@ app.post("/bfhl", async (req, res) => {
         let aiText = "";
 
         try {
-            const aiRes = await axios.post(
-          `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-              {
-               contents: [
-                  {
-               parts: [{ text: body[key] }]
+          const aiRes = await axios.post(
+            `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+            {
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: `Reply with ONLY ONE WORD. No explanation. ${body[key]}`
+                    }
+                  ]
                 }
-            ]
-          }
-        );
+              ]
+            }
+          );
 
-         aiText =
-         aiRes.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-         } catch (e) {
-            aiText = "";
-         }
+          aiText =
+            aiRes.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        } catch (err) {
+          aiText = "";
+        }
 
+        data = aiText
+          .trim()
+          .split(/\s+/)[0]
+          .replace(/[^a-zA-Z]/g, "") || "Unknown";
 
-         if (!aiText && body[key].toLowerCase().includes("maharashtra")) {
-         data = "Mumbai";
-         } else {
-         const words = aiText
-         .replace(/[^a-zA-Z ]/g, "")
-         .trim()
-         .split(" ");
-
-          data = words[words.length - 1] || "Unknown";
-         }
-
-  break;
-
+        break;
 
 
       default:
